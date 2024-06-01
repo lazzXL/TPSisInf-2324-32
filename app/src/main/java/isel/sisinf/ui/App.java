@@ -23,6 +23,13 @@ SOFTWARE.
 */
 package isel.sisinf.ui;
 
+import isel.sisinf.jpa.Bicycle;
+import isel.sisinf.jpa.Customer;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+
+import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
 
@@ -101,7 +108,6 @@ class UI
         }
         finally
         {
-            s.close();
         }
         return option;
 
@@ -146,18 +152,57 @@ class UI
     */
 
     private static final int TAB_SIZE = 24;
-
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("GoCycle-G32");
+    EntityManager em = emf.createEntityManager();
     private void createCostumer() {
-        // TODO
-        System.out.println("createCostumer()");
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter customer name:");
+        String name = scanner.nextLine();
+
+        System.out.println("Enter customer address:");
+        String address = scanner.nextLine();
+
+        System.out.println("Enter customer email:");
+        String email = scanner.nextLine();
+
+        System.out.println("Enter customer phone:");
+        String phone = scanner.nextLine();
+
+        System.out.println("Enter customer identification number:");
+        String identificationNumber = scanner.nextLine();
+
+        System.out.println("Enter customer nationality:");
+        String nationality = scanner.nextLine();
+
+        Customer customer = new Customer();
+        customer.setName(name);
+        customer.setAddress(address);
+        customer.setEmail(email);
+        customer.setPhone(phone);
+        customer.setIdentificationNumber(identificationNumber);
+        customer.setNationality(nationality);
+
+        em.getTransaction().begin();
+        em.persist(customer);
+        em.getTransaction().commit();
+
+        System.out.println("Customer created successfully!");
+
     }
   
-    private void listExistingBikes()
-    {
-        // TODO
-        System.out.println("listExistingBikes()");
-    }
+    private void listExistingBikes() {
+        List<Bicycle> bicycles = em.createQuery("SELECT b FROM Bicycle b", Bicycle.class).getResultList();
 
+        if (bicycles.isEmpty()) {
+            System.out.println("No bicycles found.");
+        } else {
+            System.out.println("Listing all bicycles:");
+            for (Bicycle bicycle : bicycles) {
+                System.out.println(bicycle.toString());
+            }
+        }
+    }
     private void checkBikeAvailability()
     {
         // TODO

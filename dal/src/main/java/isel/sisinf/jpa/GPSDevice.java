@@ -7,16 +7,16 @@ import jakarta.persistence.*;
 public class GPSDevice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long gpsId;
+    private Long gps_id;
 
     @OneToOne
     @JoinColumn(name = "bicycle_id")
     private Bicycle bicycle;
 
-    private String serialNumber;
+    private String serial_number;
     private double latitude;
     private double longitude;
-    private double batteryPercentage;
+    private double battery_percentage;
 
     // Getters and setters
 }

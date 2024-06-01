@@ -7,7 +7,7 @@ import java.util.List;
 public class Shop {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long shopId;
+    private Long shop_id;
 
     private String manager;
     private String address;
