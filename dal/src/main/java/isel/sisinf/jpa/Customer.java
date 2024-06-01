@@ -7,7 +7,7 @@ import java.util.List;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long customerId;
+    private Long customer_id;
 
     private String name;
     private String address;
@@ -22,7 +22,7 @@ public class Customer {
     // Getters and setters
 
     public Long getCustomerId() {
-        return customerId;
+        return customer_id;
     }
     public void setName(String name) {
         this.name = name;
@@ -70,6 +70,18 @@ public class Customer {
 
     public String getNationality() {
         return nationality;
+    }
+
+    public String toString() {
+        return "Customer{" +
+                "customerId=" + customer_id +
+                ", name='" + name + '\'' +
+                ", address='" + address + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                ", identificationNumber='" + identification_number + '\'' +
+                ", nationality='" + nationality + '\'' +
+                '}';
     }
 }
 

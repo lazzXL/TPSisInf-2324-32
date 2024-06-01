@@ -25,10 +25,13 @@ package isel.sisinf.ui;
 
 import isel.sisinf.jpa.Bicycle;
 import isel.sisinf.jpa.Customer;
+import isel.sisinf.jpa.Reservation;
+import isel.sisinf.jpa.Shop;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashMap;
@@ -205,20 +208,69 @@ class UI
     }
     private void checkBikeAvailability()
     {
-        // TODO
-        System.out.println("checkBikeAvailability()");
+        List<Bicycle> availableBicycles = em.createQuery("SELECT b FROM Bicycle b WHERE b.status = 'free'", Bicycle.class).getResultList();
+
+        if (availableBicycles.isEmpty()) {
+            System.out.println("No bicycles are available.");
+        } else {
+            System.out.println("Listing all available bicycles:");
+            for (Bicycle bicycle : availableBicycles) {
+                System.out.println(bicycle.toString());
+            }
+        }
 
     }
 
     private void obtainBookings() {
-        // TODO
-        System.out.println("obtainBookings()");
+        List<Reservation> reservations = em.createQuery("SELECT r FROM Reservation r", Reservation.class).getResultList();
+
+        if (reservations.isEmpty()) {
+            System.out.println("No reservations found.");
+        } else {
+            System.out.println("Listing all reservations:");
+            for (Reservation reservation : reservations) {
+                System.out.println(reservation.toString());
+            }
+        }
     }
 
     private void makeBooking()
     {
-        // TODO
-        System.out.println("makeBooking()");
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Enter customer id:");
+        Long customerId = scanner.nextLong();
+
+        System.out.println("Enter bicycle id:");
+        Long bicycleId = scanner.nextLong();
+
+        System.out.println("Enter shop id:");
+        Long shopId = scanner.nextLong();
+
+        System.out.println("Enter start date:");
+        String startDate = scanner.next();
+
+        System.out.println("Enter end date:");
+        String endDate = scanner.next();
+
+        System.out.println("Enter amount:");
+        double amount = scanner.nextDouble();
+
+        Reservation reservation = new Reservation();
+        reservation.setCustomer(em.find(Customer.class, customerId));
+
+        reservation.setBicycle(em.find(Bicycle.class, bicycleId));
+        reservation.setShop(em.find(Shop.class, shopId));
+        reservation.setStartDate(LocalDateTime.parse(startDate));
+        reservation.setEndDate(LocalDateTime.parse(endDate));
+        reservation.setAmount(amount);
+
+        em.getTransaction().begin();
+        em.persist(reservation);
+        em.getTransaction().commit();
+
+        System.out.println("Reservation created successfully!");
+
         
     }
 

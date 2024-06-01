@@ -19,4 +19,15 @@ public class Shop {
     private List<Bicycle> bicycles;
 
     // Getters and setters
+    public String toString () {
+        return "Shop{" +
+                "shop_id=" + shop_id +
+                ", manager='" + manager + '\'' +
+                ", address='" + address + '\'' +
+                ", city='" + city + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", bicycles=" + bicycles +
+                '}';
+    }
 }
