@@ -185,7 +185,7 @@ class UI
     }
     private void about()
     {
-        // TODO: Add your Group ID & member names
+        System.out.println("Grupo 32 LEIC43d \nGabriel Lemos - 50997 \nTiago Adriano - 50968 \nTomas Silva - 50458");
         System.out.println("DAL version:"+ isel.sisinf.jpa.Dal.version());
         System.out.println("Core version:"+ isel.sisinf.model.Core.version());
         
