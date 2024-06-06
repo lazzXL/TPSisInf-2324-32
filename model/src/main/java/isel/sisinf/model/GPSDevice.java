@@ -1,4 +1,4 @@
-package isel.sisinf.jpa;
+package isel.sisinf.model;
 
 import jakarta.persistence.*;
 

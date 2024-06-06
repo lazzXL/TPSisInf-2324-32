@@ -1,9 +1,22 @@
-package isel.sisinf.jpa;
+package isel.sisinf.model;
 import jakarta.persistence.*;
+
+import java.sql.Timestamp;
 import java.util.List;
 
 @Entity
 @Table(name = "Bicycles")
+@NamedQuery(name="Bicycle.findByKey",
+        query="SELECT b FROM Bicycle b WHERE b.bicycle_id =:key")
+@NamedStoredProcedureQuery(
+        name = "is_bike_available",
+        procedureName = "is_bike_available",
+        parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, type = Long.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, type = Timestamp.class),
+                @StoredProcedureParameter(mode = ParameterMode.OUT, type = Integer.class)
+        }
+)
 public class Bicycle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

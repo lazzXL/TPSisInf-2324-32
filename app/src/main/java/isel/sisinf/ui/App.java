@@ -23,16 +23,12 @@ SOFTWARE.
 */
 package isel.sisinf.ui;
 
-import isel.sisinf.jpa.Bicycle;
-import isel.sisinf.jpa.Customer;
-import isel.sisinf.jpa.Reservation;
-import isel.sisinf.jpa.Shop;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
+import isel.sisinf.model.Customer;
+import isel.sisinf.model.Reservation;
+import isel.sisinf.jpa.repo.JPAContext;
+import jakarta.persistence.OptimisticLockException;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.sql.Timestamp;
 import java.util.Scanner;
 import java.util.HashMap;
 
@@ -155,130 +151,160 @@ class UI
     */
 
     private static final int TAB_SIZE = 24;
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("GoCycle-G32");
-    EntityManager em = emf.createEntityManager();
+
     private void createCostumer() {
-        Scanner scanner = new Scanner(System.in);
+        try(JPAContext ctx = new JPAContext()){
+            Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter customer name:");
-        String name = scanner.nextLine();
+            System.out.println("Enter customer name:");
+            String name = scanner.nextLine();
 
-        System.out.println("Enter customer address:");
-        String address = scanner.nextLine();
+            System.out.println("Enter customer address:");
+            String address = scanner.nextLine();
 
-        System.out.println("Enter customer email:");
-        String email = scanner.nextLine();
+            System.out.println("Enter customer email:");
+            String email = scanner.nextLine();
 
-        System.out.println("Enter customer phone:");
-        String phone = scanner.nextLine();
+            System.out.println("Enter customer phone:");
+            String phone = scanner.nextLine();
 
-        System.out.println("Enter customer identification number:");
-        String identificationNumber = scanner.nextLine();
+            System.out.println("Enter customer identification number:");
+            String identificationNumber = scanner.nextLine();
 
-        System.out.println("Enter customer nationality:");
-        String nationality = scanner.nextLine();
+            System.out.println("Enter customer nationality:");
+            String nationality = scanner.nextLine();
 
-        Customer customer = new Customer();
-        customer.setName(name);
-        customer.setAddress(address);
-        customer.setEmail(email);
-        customer.setPhone(phone);
-        customer.setIdentificationNumber(identificationNumber);
-        customer.setNationality(nationality);
 
-        em.getTransaction().begin();
-        em.persist(customer);
-        em.getTransaction().commit();
+            ctx.beginTransaction();
 
-        System.out.println("Customer created successfully!");
+            Customer customer = new Customer();
+            customer.setName(name);
+            customer.setAddress(address);
+            customer.setEmail(email);
+            customer.setPhone(phone);
+            customer.setIdentificationNumber(identificationNumber);
+            customer.setNationality(nationality);
 
+            ctx.getCustomers().create(customer);
+            ctx.commit();
+
+            System.out.println("Customer created successfully!");
+
+        } catch (Exception e) {
+            System.out.println("An error occurred!");
+            System.out.println(e.getMessage());
+            //throw e;
+        }
     }
   
     private void listExistingBikes() {
-        List<Bicycle> bicycles = em.createQuery("SELECT b FROM Bicycle b", Bicycle.class).getResultList();
-
-        if (bicycles.isEmpty()) {
-            System.out.println("No bicycles found.");
-        } else {
-            System.out.println("Listing all bicycles:");
-            for (Bicycle bicycle : bicycles) {
-                System.out.println(bicycle.toString());
-            }
+        try(JPAContext ctx = new JPAContext()) {
+            ctx.beginTransaction();
+            ctx.getBicycles().find("SELECT b FROM Bicycle b").forEach(b ->
+                    System.out.println(b)
+            );
+        }catch (Exception e) {
+            System.out.println("An error occurred!");
+            System.out.println(e.getMessage());
+            //throw e;
         }
     }
+
     private void checkBikeAvailability()
     {
-        List<Bicycle> availableBicycles = em.createQuery("SELECT b FROM Bicycle b WHERE b.status = 'free'", Bicycle.class).getResultList();
+        try(JPAContext ctx = new JPAContext()) {
+            Scanner scanner = new Scanner(System.in);
 
-        if (availableBicycles.isEmpty()) {
-            System.out.println("No bicycles are available.");
-        } else {
-            System.out.println("Listing all available bicycles:");
-            for (Bicycle bicycle : availableBicycles) {
-                System.out.println(bicycle.toString());
-            }
+            System.out.println("Enter bike id:");
+            String bike_id = scanner.nextLine();
+            long id = Long.parseLong(bike_id);
+
+            System.out.println("Enter time (yyyy-mm-dd hh:mm:ss):");
+            String time = scanner.nextLine();
+            Timestamp times = Timestamp.valueOf(time);
+
+            ctx.beginTransaction();
+
+            int count = ctx.checkBikeisAvailable(id, times);
+
+            if(count > 0)
+                System.out.println("Bike is unavailable at that time! :(");
+            else
+                System.out.println("Bike is available at that time! :)");
+        }catch (Exception e) {
+            System.out.println("An error occurred!");
+            System.out.println(e.getMessage());
+            //throw e;
         }
-
     }
 
     private void obtainBookings() {
-        List<Reservation> reservations = em.createQuery("SELECT r FROM Reservation r", Reservation.class).getResultList();
-
-        if (reservations.isEmpty()) {
-            System.out.println("No reservations found.");
-        } else {
-            System.out.println("Listing all reservations:");
-            for (Reservation reservation : reservations) {
-                System.out.println(reservation.toString());
-            }
+        try(JPAContext ctx = new JPAContext()) {
+            ctx.beginTransaction();
+            ctx.getReservations().find("SELECT r FROM Reservation r").forEach(r ->
+                    System.out.println(r)
+            );
+        }catch (Exception e) {
+            System.out.println("An error occurred!");
+            System.out.println(e.getMessage());
+            //throw e;
         }
     }
 
-    private void makeBooking()
-    {
-        Scanner scanner = new Scanner(System.in);
+    private void makeBooking() {
+        try (JPAContext ctx = new JPAContext()) {
+            Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Enter customer id:");
-        Long customerId = scanner.nextLong();
+            System.out.println("Enter customer id:");
+            int customerId = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("Enter bicycle id:");
-        Long bicycleId = scanner.nextLong();
+            System.out.println("Enter bicycle id:");
+            int bicycleId = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("Enter shop id:");
-        Long shopId = scanner.nextLong();
+            System.out.println("Enter shop id:");
+            int shopId = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("Enter start date:");
-        String startDate = scanner.next();
+            System.out.println("Enter start date (YYYY-MM-DD HH:MM:SS):");
+            Timestamp startDate = Timestamp.valueOf(scanner.nextLine());
 
-        System.out.println("Enter end date:");
-        String endDate = scanner.next();
+            System.out.println("Enter end date (YYYY-MM-DD HH:MM:SS):");
+            Timestamp endDate = Timestamp.valueOf(scanner.nextLine());
 
-        System.out.println("Enter amount:");
-        double amount = scanner.nextDouble();
+            System.out.println("Enter amount:");
+            double amount = scanner.nextDouble();
 
-        Reservation reservation = new Reservation();
-        reservation.setCustomer(em.find(Customer.class, customerId));
+            ctx.beginTransaction();
+            ctx.makenewreservation(shopId, customerId, bicycleId, startDate, endDate, amount);
+            ctx.commit();
 
-        reservation.setBicycle(em.find(Bicycle.class, bicycleId));
-        reservation.setShop(em.find(Shop.class, shopId));
-        reservation.setStartDate(LocalDateTime.parse(startDate));
-        reservation.setEndDate(LocalDateTime.parse(endDate));
-        reservation.setAmount(amount);
-
-        em.getTransaction().begin();
-        em.persist(reservation);
-        em.getTransaction().commit();
-
-        System.out.println("Reservation created successfully!");
-
-        
+            System.out.println("Reservation created successfully!");
+        } catch (Exception e) {
+            System.out.println("An error occurred!");
+            System.out.println(e.getMessage());
+            // Optionally, handle the exception
+        }
     }
 
     private void cancelBooking()
     {
-        // TODO
-        System.out.println("cancelBooking");
-        
+        try(JPAContext ctx = new JPAContext()) {
+            System.out.println("cancelBooking");
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter booking id to cancel:");
+            Long bookingId = scanner.nextLong();
+            ctx.beginTransaction();
+            Reservation res = ctx.getReservations().findByKey(bookingId);
+            ctx.getReservations().delete(res);
+            ctx.commit();
+            System.out.println("Booking cancelled successfully");
+
+        } catch (OptimisticLockException e){
+            System.out.println("Optimistic locking error!");
+        } catch (Exception e) {
+            System.out.println("An error occurred!");
+            System.out.println(e.getMessage());
+            //throw e;
+        }
     }
     private void about()
     {

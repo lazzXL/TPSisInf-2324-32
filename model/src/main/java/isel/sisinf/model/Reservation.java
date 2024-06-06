@@ -1,9 +1,27 @@
-package isel.sisinf.jpa;
+package isel.sisinf.model;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+
+
+
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "Reservations")
+@NamedQuery(name="Reservation.findByKey",
+        query="SELECT r FROM Reservation r WHERE r.reservation_id =:key")
+@NamedStoredProcedureQuery(
+        name = "makenewreservation",
+        procedureName = "makenewreservation",
+        parameters = {
+                @StoredProcedureParameter(mode = ParameterMode.IN, type = Integer.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, type = Integer.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, type = Integer.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, type = Timestamp.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, type = Timestamp.class),
+                @StoredProcedureParameter(mode = ParameterMode.IN, type = Double.class),
+        }
+)
+
 public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,9 +39,12 @@ public class Reservation {
     @JoinColumn(name = "bicycle_id")
     private Bicycle bicycle;
 
-    private LocalDateTime start_date;
-    private LocalDateTime end_date;
+    private Timestamp start_date;
+    private Timestamp end_date;
     private double amount;
+
+    @Version
+    private long version;
 
     // Getters and setters
 
@@ -51,6 +72,14 @@ public class Reservation {
         return shop;
     }
 
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
     public void setCustomer(Customer customer) {
         this.customer = customer;
     }
@@ -67,19 +96,19 @@ public class Reservation {
         return bicycle;
     }
 
-    public void setStartDate(LocalDateTime startDate) {
+    public void setStartDate(Timestamp startDate) {
         this.start_date = startDate;
     }
 
-    public LocalDateTime getStartDate() {
+    public Timestamp getStartDate() {
         return start_date;
     }
 
-    public void setEndDate(LocalDateTime endDate) {
+    public void setEndDate(Timestamp endDate) {
         this.end_date = endDate;
     }
 
-    public LocalDateTime getEndDate() {
+    public Timestamp getEndDate() {
         return end_date;
     }
 
