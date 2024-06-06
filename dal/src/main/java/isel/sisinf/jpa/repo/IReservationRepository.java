@@ -23,7 +23,7 @@ SOFTWARE.
 */
 package isel.sisinf.jpa.repo;
 
-import isel.sisinf.model.Reservation;
+import isel.sisinf.jpa.Reservation;
 import java.util.Collection;
 
 

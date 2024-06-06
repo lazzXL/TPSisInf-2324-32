@@ -24,7 +24,7 @@ SOFTWARE.
 package isel.sisinf.jpa.repo;
 
 
-import isel.sisinf.model.*;
+import isel.sisinf.jpa.*;
 import jakarta.persistence.*;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;

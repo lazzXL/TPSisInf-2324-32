@@ -23,8 +23,8 @@ SOFTWARE.
 */
 package isel.sisinf.ui;
 
-import isel.sisinf.model.Customer;
-import isel.sisinf.model.Reservation;
+import isel.sisinf.jpa.Customer;
+import isel.sisinf.jpa.Reservation;
 import isel.sisinf.jpa.repo.JPAContext;
 import jakarta.persistence.OptimisticLockException;
 

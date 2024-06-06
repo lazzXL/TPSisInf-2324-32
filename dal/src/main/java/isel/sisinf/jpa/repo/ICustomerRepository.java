@@ -24,7 +24,7 @@ SOFTWARE.
 package isel.sisinf.jpa.repo;
 
 
-import isel.sisinf.model.Customer;
+import isel.sisinf.jpa.Customer;
 import java.util.Collection;
 
 public interface ICustomerRepository extends IRepository<Customer, Collection<Customer>, Long>, ICustomerDataMapper {

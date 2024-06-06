@@ -24,7 +24,7 @@ SOFTWARE.
 package isel.sisinf.jpa.repo;
 
 
-import isel.sisinf.model.Bicycle;
+import isel.sisinf.jpa.Bicycle;
 
 public interface IBicycleDataMapper  extends IDataMapper<Bicycle>{
 
